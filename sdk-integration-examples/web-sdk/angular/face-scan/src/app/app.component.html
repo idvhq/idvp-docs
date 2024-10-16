@@ -1,0 +1,35 @@
+<div id="root">
+  <div>
+    <a href="https://idverse.com" target="_blank">
+      <img src="/logo.svg" className="logo" alt="IDVerse logo" />
+    </a>
+  </div>
+  <h1>Simple Face Scan with Angluar</h1>
+  <div class="card" *ngIf="loading">
+    <img src="/loading.svg" alt="Loading icon" />
+  </div>
+  <div class="card" *ngIf="!loading">
+    <button (click)="onhandleStart()">Start Face Scan</button>
+  </div>
+  <idv-modal *ngIf="errorText" warning visible heading="An error occurred.">
+    <p>{{ errorText }}</p>
+    <div>
+      <idv-button
+        (click)="onClearError()"
+        label="Close"
+        variant="primary outline"
+      ></idv-button>
+    </div>
+  </idv-modal>
+  <app-details *ngIf="resultData" [details]="resultData"></app-details>
+
+  <idverse-sdk-ui
+    session-url="https://sessions.au.idkit.com/v1"
+    session-token="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
+    type="FACE_ID"
+  ></idverse-sdk-ui>
+
+  <p class="read-the-docs">Click on the IDVerse logo to learn more</p>
+</div>
+
+<router-outlet />
