@@ -8,6 +8,8 @@ import {
   SdkError,
 } from '@idverse/idverse-sdk-browser/ui';
 import '@idverse/idverse-sdk-browser/ui';
+import { SdkType } from "@idverse/idverse-sdk-browser";
+
 import { DetailsComponent } from './details/details.component';
 
 @Component({
@@ -34,13 +36,13 @@ export class AppComponent {
   };
 
   private onScanSuccess = (
-    ev: IdverseSdkUiCustomEvent<IDScanRecognizerResult>
+    ev: IdverseSdkUiCustomEvent<any>
   ) => {
     console.log(ev.detail);
     this.resultData = ev.detail;
   };
 
-  private onScanFail = (ev: IdverseSdkUiCustomEvent<IDScanProcessStatus>) => {
+  private onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
     console.log('failed to scan.', ev);
     this.errorText = ev.detail.toString();
   };
@@ -51,6 +53,23 @@ export class AppComponent {
     this.errorText = e.detail.message.toString();
   };
 
+  private onAuthenticated = (ev: IdverseSdkUiCustomEvent<any>) => {
+    console.log('authenticated', ev);
+  };
+
+  private closeSession = () => {
+    this.idverseSdk?.close();
+  };
+
+  public onTryAgain = () => {
+    this.resultData = null;
+  };
+
+  public onClose = () => {
+    this.resultData = null;
+    this.closeSession();
+  };
+
   ngOnInit() {
     this.idverseSdk = document.querySelector(
       'idverse-sdk-ui'
@@ -58,16 +77,24 @@ export class AppComponent {
     if (!this.idverseSdk) {
       throw 'idverse-sdk-ui tag does not exist';
     }
+    this.idverseSdk.recognizers = [SdkType.IDScan];
+    this.idverseSdk.enableDFA = false;
+    this.idverseSdk.enableFaceMatch = false;
+
     this.idverseSdk.addEventListener('ready', this.onSdkReady);
     this.idverseSdk.addEventListener('fatalError', this.onError);
     this.idverseSdk.addEventListener('scanFail', this.onScanFail);
     this.idverseSdk.addEventListener('scanSuccess', this.onScanSuccess);
+    this.idverseSdk.addEventListener('authenticated', this.onAuthenticated);
   }
 
   onhandleStart(state: boolean) {
     this.scanBothSides = state;
 
-    if (this.idverseSdk && this.ready) this.idverseSdk.startScanning();
+    if (this.idverseSdk && this.ready) {
+      this.idverseSdk.setScanBothSides(state);
+      this.idverseSdk.startIDScan()
+    };
   }
   onClearError() {
     this.errorText = null;

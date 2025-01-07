@@ -5,11 +5,11 @@ import "./App.css";
 
 import "@idverse/idverse-sdk-browser/ui";
 import {
-  IDScanProcessStatus,
   IDScanRecognizerResult,
   IdverseSdkUiCustomEvent,
-  SdkError,
 } from "@idverse/idverse-sdk-browser/ui";
+import { SdkType } from "@idverse/idverse-sdk-browser";
+
 import { Details } from "./components/Details/Details";
 
 function App() {
@@ -29,21 +29,33 @@ function App() {
   };
 
   const onScanSuccess = (
-    ev: IdverseSdkUiCustomEvent<IDScanRecognizerResult>
+    ev: IdverseSdkUiCustomEvent<any>
   ) => {
     console.log(ev.detail);
   };
 
-  const onScanFail = (ev: IdverseSdkUiCustomEvent<IDScanProcessStatus>) => {
+  const onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
     console.log("failed to scan.", ev);
     setError(ev.detail.toString());
   };
 
-  const onError = (e: IdverseSdkUiCustomEvent<SdkError>) => {
+  const onError = (e: IdverseSdkUiCustomEvent<any>) => {
     setLoading(false);
     console.error("SDKError", e.detail);
     setError(e.detail.message.toString());
   };
+
+  const onFirstScan = (e: IdverseSdkUiCustomEvent<any>) => {
+    console.log("first scan", e);
+  }
+
+  const onAuthenticationSuccess = (e: IdverseSdkUiCustomEvent<any>) => {
+    console.log("authentication success", e);
+  }
+
+  const closeSession = () => {
+    idverseSDK?.close();
+  }
 
   useEffect(() => {
     const sdk = document.querySelector(
@@ -52,11 +64,16 @@ function App() {
     if (!sdk) {
       throw "idverse-sdk-ui tag does not exist";
     }
+    sdk.recognizers = [SdkType.IDScan];
+    sdk.enableDFA = false;
+    sdk.enableFaceMatch = false;
 
     sdk.addEventListener("ready", onSdkReady);
     sdk.addEventListener("fatalError", onError);
     sdk.addEventListener("scanFail", onScanFail);
     sdk.addEventListener("scanSuccess", onScanSuccess);
+    sdk.addEventListener("firstScan", onFirstScan);
+    sdk.addEventListener("authenticated", onAuthenticationSuccess);
 
     setIdverseSDK(sdk);
   }, []);
@@ -64,8 +81,9 @@ function App() {
   const handleStart = async (state: boolean) => {
     if (!idverseSDK || !ready) return;
     setScanBothSides(state);
+    idverseSDK.setScanBothSides(state);
     try {
-      idverseSDK.startScanning();
+      idverseSDK.startIDScan();
     } catch (e) {
       console.error(e);
     }
@@ -110,6 +128,7 @@ function App() {
           details={resultData}
           onClose={() => {
             setResultData(undefined);
+            closeSession();
           }}
           onTryAgain={() => {
             setResultData(undefined);
@@ -119,10 +138,9 @@ function App() {
       )}
 
       <idverse-sdk-ui
-        sessionURL="http://localhost:3000"
-        sessionToken="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
-        type="ID_SCAN"
-        scanBothSides={scanBothSides}
+        session-url="http://localhost:3000"
+        session-token="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
+        session-build-id="1234567890"
       ></idverse-sdk-ui>
 
       <p className="read-the-docs">Click on the IDVerse logo to learn more</p>
