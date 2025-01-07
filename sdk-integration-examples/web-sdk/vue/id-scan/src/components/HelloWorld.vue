@@ -3,11 +3,11 @@ import { ref, onMounted } from "vue";
 import Details from "./Details.vue";
 import "@idverse/idverse-sdk-browser/ui";
 import {
-  IDScanProcessStatus,
   IDScanRecognizerResult,
   IdverseSdkUiCustomEvent,
-  SdkError,
 } from "@idverse/idverse-sdk-browser/ui";
+import { SdkType } from "@idverse/idverse-sdk-browser";
+
 
 // Vue define state
 const loading = ref(true);
@@ -23,34 +23,48 @@ const onSdkReady = () => {
   console.log("Successfully loaded");
 };
 
-const onScanSuccess = (ev: IdverseSdkUiCustomEvent<IDScanRecognizerResult>) => {
+const onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
   console.log(ev.detail);
-  resultData.value = res.detail;
+  resultData.value = ev.detail;
 };
 
-const onScanFail = (ev: IdverseSdkUiCustomEvent<IDScanProcessStatus>) => {
+const onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
   console.log("failed to scan.", ev);
   error.value = ev.detail.toString();
 };
 
-const onError = (ev: IdverseSdkUiCustomEvent<SdkError>) => {
+const onError = (ev: IdverseSdkUiCustomEvent<any>) => {
   loading.value = false;
   error.value = ev.detail.message.toString();
   console.error("SDKError", ev.detail);
 };
 
+const onAuthenticated = (ev: IdverseSdkUiCustomEvent<any>) => {
+  console.log("authenticated", ev);
+};
+
+const closeSession = () => {
+  idverseSDK.value?.close();
+}
+
 const handleStart = async (state: boolean) => {
   if (!idverseSDK || !ready) return;
   scanBothSides.value = state;
+  idverseSDK.value?.setScanBothSides(state);
   try {
-    idverseSDK.value.startScanning();
+    idverseSDK.value?.startIDScan();
   } catch (e) {
     console.error(e);
   }
 };
 
 const unsetError = () => {
-  error.value = null;
+  error.value = undefined;
+};
+
+const unsetResultData = () => {
+  resultData.value = undefined;
+  closeSession();
 };
 
 onMounted(() => {
@@ -61,11 +75,15 @@ onMounted(() => {
     throw "idverse-sdk-ui tag does not exist";
   }
 
+  sdk.recognizers = [SdkType.IDScan];
+  sdk.enableDFA = false;
+  sdk.enableFaceMatch = false;
+
   sdk.addEventListener("ready", onSdkReady);
   sdk.addEventListener("fatalError", onError);
   sdk.addEventListener("scanFail", onScanFail);
   sdk.addEventListener("scanSuccess", onScanSuccess);
-
+  sdk.addEventListener("authenticated", onAuthenticated);
   idverseSDK.value = sdk;
 });
 </script>
@@ -87,29 +105,17 @@ onMounted(() => {
     <idv-modal warning visible heading="An error occurred.">
       <p>{{ error }}</p>
       <div>
-        <idv-button
-          @click="unsetError"
-          label="Close"
-          variant="primary outline"
-        ></idv-button>
+        <idv-button @click="unsetError" label="Close" variant="primary outline"></idv-button>
       </div>
     </idv-modal>
   </div>
 
   <div v-if="resultData">
-    <Details
-      results="resultData"
-      @close="unsetResultData"
-      @tryAgain="unsetResultData"
-    />
+    <Details :details="resultData" @close="unsetResultData" @tryAgain="unsetResultData" />
   </div>
 
-  <idverse-sdk-ui
-    sessionURL="http://localhost:3000"
-    sessionToken="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
-    type="ID_SCAN"
-    scanBothSides="scanBothSides"
-  ></idverse-sdk-ui>
+  <idverse-sdk-ui session-url="http://localhost:3000" session-token="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
+    build-id="1234567890"></idverse-sdk-ui>
 
   <p class="read-the-docs">Click on the Idverse logo to learn more</p>
 </template>

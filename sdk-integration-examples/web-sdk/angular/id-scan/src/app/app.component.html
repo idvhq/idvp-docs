@@ -15,21 +15,14 @@
   <idv-modal *ngIf="errorText" warning visible heading="An error occurred.">
     <p>{{ errorText }}</p>
     <div>
-      <idv-button
-        (click)="onClearError()"
-        label="Close"
-        variant="primary outline"
-      ></idv-button>
+      <idv-button (click)="onClearError()" label="Close" variant="primary outline"></idv-button>
     </div>
   </idv-modal>
-  <app-details *ngIf="resultData" [details]="resultData"></app-details>
+  <app-details *ngIf="resultData" [details]="resultData" (onClose)="onClose()"
+    (onTryAgain)="onTryAgain()"></app-details>
 
-  <idverse-sdk-ui
-    session-url="https://sessions.au.idkit.com/v1"
-    session-token="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
-    type="ID_SCAN"
-    [scan-both-sides]="scanBothSides"
-  ></idverse-sdk-ui>
+  <idverse-sdk-ui session-url="https://sessions.au.idkit.com/v1" session-token="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
+    build-id="1234567890"></idverse-sdk-ui>
 
   <p class="read-the-docs">Click on the IDVerse logo to learn more</p>
 </div>

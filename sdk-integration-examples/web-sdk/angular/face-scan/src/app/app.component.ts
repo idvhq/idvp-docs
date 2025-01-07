@@ -2,12 +2,12 @@ import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import {
-  IDScanProcessStatus,
-  IDScanRecognizerResult,
   IdverseSdkUiCustomEvent,
   SdkError,
   FaceScanRecognizerResult,
 } from '@idverse/idverse-sdk-browser/ui';
+import { SdkType } from "@idverse/idverse-sdk-browser";
+
 import '@idverse/idverse-sdk-browser/ui';
 import { DetailsComponent } from './details/details.component';
 
@@ -25,7 +25,6 @@ export class AppComponent {
   loading: boolean = true;
   ready: boolean = false;
   errorText: string | null = null;
-  scanBothSides: boolean = false;
   resultData: FaceScanRecognizerResult | null = null;
 
   private onSdkReady = () => {
@@ -35,15 +34,15 @@ export class AppComponent {
   };
 
   private onScanSuccess = (
-    ev: IdverseSdkUiCustomEvent<IDScanRecognizerResult>
+    ev: IdverseSdkUiCustomEvent<any>
   ) => {
     console.log(ev.detail);
     const res =
-      ev as unknown as IdverseSdkUiCustomEvent<FaceScanRecognizerResult>;
+      ev as unknown as IdverseSdkUiCustomEvent<any>;
     this.resultData = res.detail;
   };
 
-  private onScanFail = (ev: IdverseSdkUiCustomEvent<IDScanProcessStatus>) => {
+  private onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
     console.log('failed to scan.', ev);
     this.errorText = ev.detail.toString();
   };
@@ -54,6 +53,23 @@ export class AppComponent {
     this.errorText = e.detail.message.toString();
   };
 
+  private onAuthenticated = (ev: IdverseSdkUiCustomEvent<any>) => {
+    console.log('authenticated', ev);
+  };
+
+  private closeSession = () => {
+    this.idverseSdk?.close();
+  };
+
+  public onClose = () => {
+    this.resultData = null;
+    this.closeSession();
+  };
+
+  public onTryAgain = () => {
+    this.resultData = null;
+  };
+
   ngOnInit() {
     this.idverseSdk = document.querySelector(
       'idverse-sdk-ui'
@@ -61,10 +77,14 @@ export class AppComponent {
     if (!this.idverseSdk) {
       throw 'idverse-sdk-ui tag does not exist';
     }
+    this.idverseSdk.recognizers = [SdkType.FaceScan];
+    this.idverseSdk.enableDFA = false;
+    this.idverseSdk.enableFaceMatch = false;
     this.idverseSdk.addEventListener('ready', this.onSdkReady);
     this.idverseSdk.addEventListener('fatalError', this.onError);
     this.idverseSdk.addEventListener('scanFail', this.onScanFail);
     this.idverseSdk.addEventListener('scanSuccess', this.onScanSuccess);
+    this.idverseSdk.addEventListener('authenticated', this.onAuthenticated);
   }
 
   onhandleStart() {

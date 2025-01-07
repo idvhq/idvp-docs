@@ -13,15 +13,15 @@ import { HTMLAttributes } from "react";
 
 type StencilToReact<T> = {
   [P in keyof T]?: T[P] &
-    Omit<HTMLAttributes<Element>, "className"> & {
-      class?: string;
-    };
+  Omit<HTMLAttributes<Element>, "className"> & {
+    class?: string;
+  };
 };
 
 declare global {
   export namespace JSX {
     interface IntrinsicElements
-      extends StencilToReact<LocalJSX.IntrinsicElements> {}
+      extends StencilToReact<LocalJSX.IntrinsicElements> { }
   }
 }
 
@@ -32,6 +32,4 @@ createRoot(document.getElementById("root")!).render(
 );
 
 // Initiate IDVerseSDK UI components.
-applyPolyfills().then(() => {
-  defineCustomElements();
-});
+defineCustomElements();

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
 
 const props = defineProps<{
   details: any;
@@ -15,7 +14,7 @@ const handleOnTryAgain = () => {
   props.onTryAgain();
 };
 
-const fields = [];
+const fields: any[] = [];
 
 const order = [
   "full_name",
@@ -41,8 +40,8 @@ props.details.sort(function (a: any, b: any) {
   return indexA - indexB;
 });
 
-for (let i = 0; i < details.length; i++) {
-  const field = details[i];
+for (let i = 0; i < props.details.length; i++) {
+  const field: any = props.details[i];
   fields.push({
     label: field.fieldName.replace(/_/g, " "),
     name: field.fieldName,
