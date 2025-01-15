@@ -92,7 +92,7 @@ onMounted(() => {
     <img src="../assets/loading.svg" alt="Loading icon" />
   </div>
   <div v-else class="card">
-    <button type="button" @click="handleStart(true)">
+    <button type="button" @click="handleStart(false)">
       Start ID Check Front Side
     </button>
     <button type="button" @click="handleStart(true)">
