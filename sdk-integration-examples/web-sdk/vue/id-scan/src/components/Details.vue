@@ -53,9 +53,9 @@ for (let i = 0; i < props.details.length; i++) {
         <input
           disabled
           type="text"
-          name="field.name"
-          value="field.value"
-          id="field.name"
+          :name="field.name"
+          :value="field.value"
+          :id="field.name"
         />
       </div>
     </div>

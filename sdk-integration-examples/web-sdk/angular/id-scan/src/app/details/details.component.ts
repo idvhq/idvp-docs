@@ -11,6 +11,10 @@ export class DetailsComponent {
   @Input() details: any = [];
   @Output() onClose = new EventEmitter<void>();
 
+  public handleClose = () => {
+    this.onClose.emit();
+  };
+
   onGetFields() {
     const fields = [];
 
