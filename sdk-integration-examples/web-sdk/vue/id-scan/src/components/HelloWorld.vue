@@ -8,7 +8,6 @@ import {
 } from "@idverse/idverse-sdk-browser/ui";
 import { SdkType } from "@idverse/idverse-sdk-browser";
 
-
 // Vue define state
 const loading = ref(true);
 const ready = ref(false);
@@ -18,14 +17,12 @@ const resultData = ref<IDScanRecognizerResult>();
 const idverseSDK = ref<HTMLIdverseSdkUiElement | null>(null);
 
 const onSdkReady = () => {
-  loading.value = false;
-  ready.value = true;
   console.log("Successfully loaded");
 };
 
 const onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
   console.log(ev.detail);
-  resultData.value = ev.detail;
+  resultData.value = ev.detail.result.details.extractedInfo.viz;
 };
 
 const onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
@@ -41,11 +38,13 @@ const onError = (ev: IdverseSdkUiCustomEvent<any>) => {
 
 const onAuthenticated = (ev: IdverseSdkUiCustomEvent<any>) => {
   console.log("authenticated", ev);
+  loading.value = false;
+  ready.value = true;
 };
 
 const closeSession = () => {
   idverseSDK.value?.close();
-}
+};
 
 const handleStart = async (state: boolean) => {
   if (!idverseSDK || !ready) return;
@@ -76,8 +75,8 @@ onMounted(() => {
   }
 
   sdk.recognizers = [SdkType.IDScan];
-  sdk.enableDFA = false;
-  sdk.enableFaceMatch = false;
+  sdk.enableDFA = true;
+  sdk.enableFaceMatch = true;
 
   sdk.addEventListener("ready", onSdkReady);
   sdk.addEventListener("fatalError", onError);
@@ -105,17 +104,24 @@ onMounted(() => {
     <idv-modal warning visible heading="An error occurred.">
       <p>{{ error }}</p>
       <div>
-        <idv-button @click="unsetError" label="Close" variant="primary outline"></idv-button>
+        <idv-button
+          @click="unsetError"
+          label="Close"
+          variant="primary outline"
+        ></idv-button>
       </div>
     </idv-modal>
   </div>
 
   <div v-if="resultData">
-    <Details :details="resultData" @close="unsetResultData" @tryAgain="unsetResultData" />
+    <Details :details="resultData" @close="unsetResultData" />
   </div>
 
-  <idverse-sdk-ui session-url="http://localhost:3000" session-token="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
-    build-id="1234567890"></idverse-sdk-ui>
+  <idverse-sdk-ui
+    session-url="YOUR_SESSION_URL"
+    session-token="YOUR_SESSION_TOKEN"
+    session-build-id="YOUR_SESSION_BUILD_ID"
+  ></idverse-sdk-ui>
 
   <p class="read-the-docs">Click on the Idverse logo to learn more</p>
 </template>

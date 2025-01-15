@@ -5,16 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "host": "vite --host",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@idverse/idverse-sdk-browser": "file:../../..",
-    "@idverse/idverse-sdk-ui": "file:../../../ui",
+    "@idverse/idverse-sdk-browser": "file:../../../idverse-sdk-browser",
+    "@idverse/idverse-sdk-ui": "file:../../../idverse-sdk-browser/ui",
     "vue": "^3.5.10"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
+    "@vitejs/plugin-basic-ssl": "^1.2.0",
     "sass-embedded": "^1.79.5",
     "typescript": "^5.5.3",
     "vite": "^5.4.8",

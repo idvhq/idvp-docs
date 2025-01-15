@@ -3,11 +3,9 @@ import "./Details.css";
 export const Details = ({
   details,
   onClose,
-  onTryAgain,
 }: {
   details: any;
   onClose: () => void;
-  onTryAgain: () => void;
 }) => {
   const fields = [];
 
@@ -64,8 +62,7 @@ export const Details = ({
       </div>
 
       <footer>
-        <button onClick={() => onClose()}>Go Back</button>
-        <button onClick={() => onTryAgain()}>Try again</button>
+        <button onClick={() => onClose()}>Close</button>
       </footer>
     </div>
   );

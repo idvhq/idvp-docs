@@ -1,30 +1,29 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
-  selector: 'app-details',
+  selector: "app-details",
   standalone: true,
   imports: [],
-  templateUrl: './details.component.html',
-  styleUrl: './details.component.scss',
+  templateUrl: "./details.component.html",
+  styleUrl: "./details.component.scss",
 })
 export class DetailsComponent {
   @Input() details: any = [];
   @Output() onClose = new EventEmitter<void>();
-  @Output() onTryAgain = new EventEmitter<void>();
 
   onGetFields() {
     const fields = [];
 
     const order = [
-      'full_name',
-      'given_name',
-      'first_name',
-      'middle_name',
-      'last_name',
-      'document_number',
-      'birth_date',
-      'expiry_date',
-      'document_id',
+      "full_name",
+      "given_name",
+      "first_name",
+      "middle_name",
+      "last_name",
+      "document_number",
+      "birth_date",
+      "expiry_date",
+      "document_id",
     ];
 
     this.details.sort(function (a: any, b: any) {
@@ -42,7 +41,7 @@ export class DetailsComponent {
     for (let i = 0; i < this.details.length; i++) {
       const field = this.details[i];
       fields.push({
-        label: field.fieldName.replace(/_/g, ' '),
+        label: field.fieldName.replace(/_/g, " "),
         name: field.fieldName,
         value: field.fieldValue,
       });
