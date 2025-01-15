@@ -1,17 +1,11 @@
 <script setup lang="ts">
-
 const props = defineProps<{
   details: any;
   onClose: () => void;
-  onTryAgain: () => void;
 }>();
 
 const handleClose = () => {
   props.onClose();
-};
-
-const handleOnTryAgain = () => {
-  props.onTryAgain();
 };
 
 const fields: any[] = [];
@@ -67,13 +61,12 @@ for (let i = 0; i < props.details.length; i++) {
     </div>
 
     <footer>
-      <button @click="handleClose">Go Back</button>
-      <button @click="handleOnTryAgain">Try again</button>
+      <button @click="handleClose">Close</button>
     </footer>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped lang="css">
 .form {
   position: absolute;
   width: 100%;

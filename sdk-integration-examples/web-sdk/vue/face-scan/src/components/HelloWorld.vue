@@ -8,7 +8,6 @@ import {
 } from "@idverse/idverse-sdk-browser/ui";
 import { SdkType } from "@idverse/idverse-sdk-browser";
 
-
 // Vue define state
 const loading = ref(true);
 const ready = ref(false);
@@ -17,14 +16,12 @@ const resultData = ref<FaceScanRecognizerResult>();
 const idverseSDK = ref<HTMLIdverseSdkUiElement | null>(null);
 
 const onSdkReady = () => {
-  loading.value = false;
-  ready.value = true;
   console.log("Successfully loaded");
 };
 
 const onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
   console.log(ev.detail);
-  resultData.value = ev.detail;
+  resultData.value = ev.detail.result.status;
 };
 
 const onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
@@ -39,12 +36,14 @@ const onError = (ev: IdverseSdkUiCustomEvent<any>) => {
 };
 
 const onAuthenticated = (ev: IdverseSdkUiCustomEvent<any>) => {
+  loading.value = false;
+  ready.value = true;
   console.log("authenticated", ev);
 };
 
 const closeSession = () => {
   idverseSDK.value?.close();
-}
+};
 
 const handleStart = async () => {
   if (!idverseSDK.value || !ready.value) return;
@@ -92,28 +91,30 @@ onMounted(() => {
   <div v-else class="card">
     <button type="button" @click="handleStart()">Start Face ID Scan</button>
   </div>
+  <div v-if="resultData === 1">
+    <div class="card">
+      <button type="button" @click="unsetResultData()">Close</button>
+    </div>
+  </div>
 
   <div v-if="error">
     <idv-modal warning visible heading="An error occurred.">
       <p>{{ error }}</p>
       <div>
-        <idv-button @click="unsetError" label="Close" variant="primary outline"></idv-button>
+        <idv-button
+          @click="unsetError"
+          label="Close"
+          variant="primary outline"
+        ></idv-button>
       </div>
     </idv-modal>
   </div>
 
-  <div v-if="resultData">
-    <Details :details="resultData" @close="unsetResultData" @tryAgain="unsetResultData" />
-  </div>
-
-  <idverse-sdk-ui sessionURL="http://localhost:3000" sessionToken="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
-    build-id="1234567890"></idverse-sdk-ui>
+  <idverse-sdk-ui
+    session-url="YOUR_SESSION_URL"
+    session-token="YOUR_SESSION_TOKEN"
+    session-build-id="YOUR_SESSION_BUILD_ID"
+  ></idverse-sdk-ui>
 
   <p class="read-the-docs">Click on the Idverse logo to learn more</p>
 </template>
-
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>

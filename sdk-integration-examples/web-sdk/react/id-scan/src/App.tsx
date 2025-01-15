@@ -28,10 +28,9 @@ function App() {
     console.log("Successfully loaded");
   };
 
-  const onScanSuccess = (
-    ev: IdverseSdkUiCustomEvent<any>
-  ) => {
+  const onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
     console.log(ev.detail);
+    setResultData(ev.detail.result.details.extractedInfo.viz);
   };
 
   const onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
@@ -47,15 +46,17 @@ function App() {
 
   const onFirstScan = (e: IdverseSdkUiCustomEvent<any>) => {
     console.log("first scan", e);
-  }
+  };
 
   const onAuthenticationSuccess = (e: IdverseSdkUiCustomEvent<any>) => {
     console.log("authentication success", e);
-  }
+    setLoading(false);
+    setReady(true);
+  };
 
   const closeSession = () => {
     idverseSDK?.close();
-  }
+  };
 
   useEffect(() => {
     const sdk = document.querySelector(
@@ -65,8 +66,8 @@ function App() {
       throw "idverse-sdk-ui tag does not exist";
     }
     sdk.recognizers = [SdkType.IDScan];
-    sdk.enableDFA = false;
-    sdk.enableFaceMatch = false;
+    sdk.enableDFA = true;
+    sdk.enableFaceMatch = true;
 
     sdk.addEventListener("ready", onSdkReady);
     sdk.addEventListener("fatalError", onError);
@@ -130,17 +131,13 @@ function App() {
             setResultData(undefined);
             closeSession();
           }}
-          onTryAgain={() => {
-            setResultData(undefined);
-            handleStart(scanBothSides);
-          }}
         />
       )}
 
       <idverse-sdk-ui
-        session-url="http://localhost:3000"
-        session-token="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
-        session-build-id="1234567890"
+        session-url="YOUR_SESSION_URL"
+        session-token="YOUR_SESSION_TOKEN"
+        session-build-id="YOUR_SESSION_BUILD_ID"
       ></idverse-sdk-ui>
 
       <p className="read-the-docs">Click on the IDVerse logo to learn more</p>

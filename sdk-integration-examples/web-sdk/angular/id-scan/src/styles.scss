@@ -2,11 +2,10 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  width: 100% !important;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #051C2C;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -16,19 +15,19 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #00C4B3;
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #535bf2;
+  color: #00C4B3;
 }
 
 body {
   margin: 0;
   display: flex;
-  justify-content: center;
   place-items: center;
+  justify-content: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -45,13 +44,15 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  color: white;
+  background-color: #00C4B3;
   cursor: pointer;
   transition: border-color 0.25s;
+  width: 15em;
 }
 
 button:hover {
-  border-color: #646cff;
+  border-color: #051C2C;
 }
 
 button:focus,
@@ -66,10 +67,21 @@ button:focus-visible {
   }
 
   a:hover {
-    color: #747bff;
+    color: #051C2C;
   }
 
   button {
-    background-color: #f9f9f9;
+    background-color: #00C4B3;
+  }
+
+  #loading-icon {
+    background-color: #051C2C !important;
+    border-radius: 5px !important;
+
+  }
+
+  .logo {
+    background-color: #051C2C !important;
+    border-radius: 5px !important;
   }
 }

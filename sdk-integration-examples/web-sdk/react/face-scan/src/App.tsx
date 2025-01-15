@@ -10,8 +10,6 @@ import {
 } from "@idverse/idverse-sdk-browser/ui";
 import { SdkType } from "@idverse/idverse-sdk-browser";
 
-import { Details } from "./components/Details/Details";
-
 function App() {
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
@@ -27,10 +25,9 @@ function App() {
     console.log("Successfully loaded");
   };
 
-  const onScanSuccess = (
-    ev: IdverseSdkUiCustomEvent<any>
-  ) => {
+  const onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
     console.log(ev.detail);
+    setResultData(ev.detail.result.status);
   };
 
   const onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
@@ -46,15 +43,18 @@ function App() {
 
   const onFirstScan = (e: IdverseSdkUiCustomEvent<any>) => {
     console.log("first scan", e);
-  }
+  };
 
   const onAuthenticationSuccess = (e: IdverseSdkUiCustomEvent<any>) => {
     console.log("authentication success", e);
-  }
+    setLoading(false);
+    setReady(true);
+  };
 
   const closeSession = () => {
     idverseSDK?.close();
-  }
+    setResultData(undefined);
+  };
 
   useEffect(() => {
     const sdk = document.querySelector(
@@ -94,13 +94,16 @@ function App() {
       <h1>Face Scan with Vite + React</h1>
       {loading ? (
         <div className="card">
-          <img src={loadingSvg} alt="Loading icon" />
+          <img id="loading-icon" src={loadingSvg} alt="Loading icon" />
         </div>
       ) : (
         <div className="card">
-          <button onClick={() => handleStart()}>
-            Start Face Scan
-          </button>
+          <button onClick={() => handleStart()}>Start Face Scan</button>
+        </div>
+      )}
+      {resultData === 1 && (
+        <div className="card">
+          <button onClick={() => closeSession()}>Close</button>
         </div>
       )}
       {error && (
@@ -115,24 +118,11 @@ function App() {
           </div>
         </idv-modal>
       )}
-      {resultData && (
-        <Details
-          details={resultData}
-          onClose={() => {
-            setResultData(undefined);
-            closeSession();
-          }}
-          onTryAgain={() => {
-            setResultData(undefined);
-            handleStart();
-          }}
-        />
-      )}
 
       <idverse-sdk-ui
-        session-url="http://localhost:3000"
-        session-token="a0dab893-c77d-54f7-96c1-f31ebbdaba4a"
-        session-build-id="1234567890"
+        session-url="YOUR_SESSION_URL"
+        session-token="YOUR_SESSION_TOKEN"
+        session-build-id="YOUR_SESSION_BUILD_ID"
       ></idverse-sdk-ui>
 
       <p className="read-the-docs">Click on the IDVerse logo to learn more</p>
