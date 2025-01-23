@@ -67,7 +67,8 @@ function App() {
     }
     sdk.recognizers = [SdkType.IDScan];
     sdk.enableDFA = true;
-    sdk.enableFaceMatch = true;
+    // INFO: Set to 'true' when used in combination with FaceScan
+    sdk.enableFaceMatch = false;
 
     sdk.addEventListener("ready", onSdkReady);
     sdk.addEventListener("fatalError", onError);
@@ -83,6 +84,7 @@ function App() {
     if (!idverseSDK || !ready) return;
     setScanBothSides(state);
     idverseSDK.setScanBothSides(state);
+    setLoading(true);
     try {
       idverseSDK.startIDScan();
     } catch (e) {

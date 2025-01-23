@@ -17,6 +17,7 @@ const idverseSDK = ref<HTMLIdverseSdkUiElement | null>(null);
 
 const onSdkReady = () => {
   console.log("Successfully loaded");
+  loading.value = false;
 };
 
 const onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
@@ -47,6 +48,7 @@ const closeSession = () => {
 
 const handleStart = async () => {
   if (!idverseSDK.value || !ready.value) return;
+  loading.value = true;
   try {
     idverseSDK.value.startFaceScan();
   } catch (e) {

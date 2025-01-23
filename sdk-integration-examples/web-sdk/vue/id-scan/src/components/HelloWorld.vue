@@ -18,6 +18,7 @@ const idverseSDK = ref<HTMLIdverseSdkUiElement | null>(null);
 
 const onSdkReady = () => {
   console.log("Successfully loaded");
+  loading.value = false;
 };
 
 const onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
@@ -48,6 +49,7 @@ const closeSession = () => {
 
 const handleStart = async (state: boolean) => {
   if (!idverseSDK || !ready) return;
+  loading.value = true;
   scanBothSides.value = state;
   idverseSDK.value?.setScanBothSides(state);
   try {
@@ -76,7 +78,8 @@ onMounted(() => {
 
   sdk.recognizers = [SdkType.IDScan];
   sdk.enableDFA = true;
-  sdk.enableFaceMatch = true;
+  // INFO: Set to 'true' when used in combination with FaceScan
+  sdk.enableFaceMatch = false;
 
   sdk.addEventListener("ready", onSdkReady);
   sdk.addEventListener("fatalError", onError);
