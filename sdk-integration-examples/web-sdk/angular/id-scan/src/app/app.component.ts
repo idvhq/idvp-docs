@@ -30,6 +30,7 @@ export class AppComponent {
 
   private onSdkReady = () => {
     console.log("Successfully loaded");
+    this.loading = false;
   };
 
   private onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
@@ -72,7 +73,8 @@ export class AppComponent {
     }
     this.idverseSdk.recognizers = [SdkType.IDScan];
     this.idverseSdk.enableDFA = true;
-    this.idverseSdk.enableFaceMatch = true;
+    // INFO: Set to 'true' when used in combination with FaceScan
+    this.idverseSdk.enableFaceMatch = false;
 
     this.idverseSdk.addEventListener("ready", this.onSdkReady);
     this.idverseSdk.addEventListener("fatalError", this.onError);
@@ -83,10 +85,14 @@ export class AppComponent {
 
   onhandleStart(state: boolean) {
     this.scanBothSides = state;
-
     if (this.idverseSdk && this.ready) {
+      this.loading = true;
       this.idverseSdk.setScanBothSides(state);
-      this.idverseSdk.startIDScan();
+      try {
+        this.idverseSdk.startIDScan();
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
   onClearError() {
