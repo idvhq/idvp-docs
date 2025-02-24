@@ -7,7 +7,6 @@ import "./index.css";
 import { JSX as LocalJSX } from "@idverse/idverse-sdk-browser/ui";
 import {
   defineCustomElements,
-  applyPolyfills,
 } from "@idverse/idverse-sdk-browser/ui/loader";
 import { HTMLAttributes } from "react";
 
