@@ -10,14 +10,12 @@ const BUILD_KEY = "session_build_id";
 
 function App() {
   const [loading, setLoading] = useState(false);
-  const [sessionUrl, setSessionUrl] = useState<string>();
+  const [sessionUrl, setSessionUrl] = useState<string>("");
   const [error, setError] = useState<string>();
   const [resultData, setResultData] = useState<any>();
-  const [idverseSDK, setIdverseSDK] = useState<HTMLIdverseSdkUiElement | null>(
-    null
-  );
-  const [sessionToken, setSessiontoken] = useState<string>();
-  const [buildId, setBuildId] = useState<string>();
+  const [idverseSDK, setIdverseSDK] = useState<HTMLIdverseSdkUiElement | null>(null);
+  const [sessionToken, setSessiontoken] = useState<string>("");
+  const [buildId, setBuildId] = useState<string>("");
   const [init, setInit] = useState(false);
   const [enableDFA, setEnableDFA] = useState(true);
   const [enableFaceMatch, setEnableFaceMatch] = useState(true);
