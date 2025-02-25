@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
+import Main from "./components/Main.vue";
 </script>
 
 <template>
@@ -8,7 +8,7 @@ import HelloWorld from "./components/HelloWorld.vue";
       <img src="/logo.svg" class="logo" alt="Idverse logo" />
     </a>
   </div>
-  <HelloWorld />
+  <Main />
 </template>
 
 <style scoped>

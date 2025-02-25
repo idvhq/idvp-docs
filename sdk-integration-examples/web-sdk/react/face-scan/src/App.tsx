@@ -77,6 +77,7 @@ function App() {
 
   const handleStart = async () => {
     if (!idverseSDK || !ready) return;
+    setLoading(true);
     try {
       idverseSDK.startFaceScan();
     } catch (e) {

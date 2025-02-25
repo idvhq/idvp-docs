@@ -28,6 +28,7 @@ export class AppComponent {
 
   private onSdkReady = () => {
     console.log("Successfully loaded");
+    this.loading = false;
   };
 
   private onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
@@ -83,7 +84,14 @@ export class AppComponent {
   }
 
   onhandleStart() {
-    if (this.idverseSdk && this.ready) this.idverseSdk.startFaceScan();
+    if (this.idverseSdk && this.ready) {
+      this.loading = true;
+      try {
+        this.idverseSdk.startFaceScan();
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
   onClearError() {
     this.errorText = null;

@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import Details from "./Details.vue";
 import "@idverse/idverse-sdk-browser/ui";
 import {
-  FaceScanRecognizerResult,
+  IDScanRecognizerResult,
   IdverseSdkUiCustomEvent,
 } from "@idverse/idverse-sdk-browser/ui";
 import { SdkType } from "@idverse/idverse-sdk-browser";
@@ -12,16 +12,18 @@ import { SdkType } from "@idverse/idverse-sdk-browser";
 const loading = ref(true);
 const ready = ref(false);
 const error = ref<string>();
-const resultData = ref<FaceScanRecognizerResult>();
+const scanBothSides = ref(false);
+const resultData = ref<IDScanRecognizerResult>();
 const idverseSDK = ref<HTMLIdverseSdkUiElement | null>(null);
 
 const onSdkReady = () => {
   console.log("Successfully loaded");
+  loading.value = false;
 };
 
 const onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
   console.log(ev.detail);
-  resultData.value = ev.detail.result.status;
+  resultData.value = ev.detail.result.details.extractedInfo.viz;
 };
 
 const onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
@@ -36,19 +38,22 @@ const onError = (ev: IdverseSdkUiCustomEvent<any>) => {
 };
 
 const onAuthenticated = (ev: IdverseSdkUiCustomEvent<any>) => {
+  console.log("authenticated", ev);
   loading.value = false;
   ready.value = true;
-  console.log("authenticated", ev);
 };
 
 const closeSession = () => {
   idverseSDK.value?.close();
 };
 
-const handleStart = async () => {
-  if (!idverseSDK.value || !ready.value) return;
+const handleStart = async (state: boolean) => {
+  if (!idverseSDK || !ready) return;
+  loading.value = true;
+  scanBothSides.value = state;
+  idverseSDK.value?.setScanBothSides(state);
   try {
-    idverseSDK.value.startFaceScan();
+    idverseSDK.value?.startIDScan();
   } catch (e) {
     console.error(e);
   }
@@ -71,8 +76,9 @@ onMounted(() => {
     throw "idverse-sdk-ui tag does not exist";
   }
 
-  sdk.recognizers = [SdkType.FaceScan];
-  sdk.enableDFA = false;
+  sdk.recognizers = [SdkType.IDScan];
+  sdk.enableDFA = true;
+  // INFO: Set to true when IDScan is used in combination with FaceScan, and a Face Match result is required.
   sdk.enableFaceMatch = false;
 
   sdk.addEventListener("ready", onSdkReady);
@@ -89,12 +95,12 @@ onMounted(() => {
     <img src="../assets/loading.svg" alt="Loading icon" />
   </div>
   <div v-else class="card">
-    <button type="button" @click="handleStart()">Start Face ID Scan</button>
-  </div>
-  <div v-if="resultData === 1">
-    <div class="card">
-      <button type="button" @click="unsetResultData()">Close</button>
-    </div>
+    <button type="button" @click="handleStart(false)">
+      Start ID Check Front Side
+    </button>
+    <button type="button" @click="handleStart(true)">
+      Start ID Check Both Sides
+    </button>
   </div>
 
   <div v-if="error">
@@ -110,6 +116,10 @@ onMounted(() => {
     </idv-modal>
   </div>
 
+  <div v-if="resultData">
+    <Details :details="resultData" @close="unsetResultData" />
+  </div>
+
   <idverse-sdk-ui
     session-url="YOUR_SESSION_URL"
     session-token="YOUR_SESSION_TOKEN"
@@ -118,3 +128,9 @@ onMounted(() => {
 
   <p class="read-the-docs">Click on the Idverse logo to learn more</p>
 </template>
+
+<style scoped>
+.read-the-docs {
+  color: #888;
+}
+</style>
