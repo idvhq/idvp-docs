@@ -67,7 +67,7 @@ function App() {
     }
     sdk.recognizers = [SdkType.IDScan];
     sdk.enableDFA = true;
-    // INFO: Set to 'true' when used in combination with FaceScan
+    // INFO: Set to true when IDScan is used in combination with FaceScan, and a Face Match result is required.
     sdk.enableFaceMatch = false;
 
     sdk.addEventListener("ready", onSdkReady);

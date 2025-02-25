@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import Details from "./Details.vue";
 import "@idverse/idverse-sdk-browser/ui";
 import {
   FaceScanRecognizerResult,
