@@ -7,8 +7,7 @@ export default defineConfig({
   plugins: [react(), basicSsl()],
   server: {
     fs: {
-      // Allow serving files from one level up to the project root
-      allow: ["..", "../../engine-5"],
+      allow: ["../../.."],
     },
   },
 });
