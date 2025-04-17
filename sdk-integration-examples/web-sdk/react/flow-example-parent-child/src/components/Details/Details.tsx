@@ -2,24 +2,36 @@ import { useEffect, useState } from 'react';
 import './Details.css';
 
 export const Details = ({
+  sdk,
   details,
   onContinue,
-  is_sdk_face_scan_loaded,
 }: {
+  sdk: HTMLIdverseSdkUiElement;
   details: any[];
   onContinue: () => void;
-  is_sdk_face_scan_loaded: boolean;
 }) => {
   const [continueButtonHasBeenClicked, setContinueButtonHasBeenClicked] =
     useState(false);
 
+  const [is_sdk_face_scan_loaded, set_is_sdk_face_scan_loaded] =
+    useState(false);
+
+  useEffect(() => {
+    // Eager loading face scan wasm, to use it in the next step which is face scan
+    // Even if there might be a step between this and face scan this is a good place to eager load it
+    sdk.loadFaceScan().then(() => set_is_sdk_face_scan_loaded(true));
+  }, []);
+
   useEffect(() => {
     if (is_sdk_face_scan_loaded && continueButtonHasBeenClicked) {
+      // Only transition next step (Face Scan) if wasm was loaded
       onContinue();
     }
   }, [is_sdk_face_scan_loaded, continueButtonHasBeenClicked]);
 
   const handleContinue = () => {
+    // In the case face scan wasm is not loaded yet, the "Continue" button change to "Loading"
+    // This is just a UX pattern we advice,but if want you can replace this with a loading screen
     setContinueButtonHasBeenClicked(true);
   };
 
