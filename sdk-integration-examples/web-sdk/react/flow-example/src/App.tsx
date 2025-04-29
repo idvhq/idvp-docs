@@ -1,363 +1,136 @@
-import { useState, useEffect } from "react";
-import "./App.css";
-import { IdverseSdkUiCustomEvent } from "@idverse/idverse-sdk-browser/ui";
-import { SdkType } from "@idverse/idverse-sdk-browser";
+const sessionUrl = import.meta.env.VITE_SDK_SESSION_URL;
+const sessionToken = import.meta.env.VITE_SDK_SESSION_TOKEN;
+const buildId = import.meta.env.VITE_SDK_SESSION_BUILD_ID;
 
-import { Details } from "./components/Details/Details";
+import { useState, useEffect, useRef } from 'react';
+import './App.css';
+import { IdverseSdkUiCustomEvent } from '@idverse/idverse-sdk-browser/ui';
+import { SdkType } from '@idverse/idverse-sdk-browser';
 
-const STORAGE_KEY = "session_api_url";
-const BUILD_KEY = "session_build_id";
+import { Details } from './components/Details/Details';
+import { Intro } from './components/Intro';
+import { IdScan } from './components/IdScan';
+import { End } from './components/End';
 
-function App() {
-  const [loading, setLoading] = useState(false);
-  const [sessionUrl, setSessionUrl] = useState<string>("");
-  const [error, setError] = useState<string>();
+enum Step {
+  Intro,
+  IdScan,
+  ReviewDetails,
+  End,
+}
+
+export function App() {
+  const [current_step, set_current_step] = useState(Step.Intro);
+  const [is_sdk_id_scan_loaded, set_is_sdk_id_scan_loaded] = useState(false);
   const [resultData, setResultData] = useState<any>();
-  const [idverseSDK, setIdverseSDK] = useState<HTMLIdverseSdkUiElement | null>(null);
-  const [sessionToken, setSessiontoken] = useState<string>("");
-  const [buildId, setBuildId] = useState<string>("");
-  const [init, setInit] = useState(false);
-  const [enableDFA, setEnableDFA] = useState(true);
-  const [enableFaceMatch, setEnableFaceMatch] = useState(true);
+
+  const sdk_ref = useRef<HTMLIdverseSdkUiElement>();
 
   useEffect(() => {
-    const keyValue = localStorage.getItem(STORAGE_KEY);
-    const buildId = localStorage.getItem(BUILD_KEY);
-    if (keyValue) {
-      setSessionUrl(keyValue);
+    const sdk = document.querySelector(
+      'idverse-sdk-ui'
+    ) as HTMLIdverseSdkUiElement;
+    if (!sdk) {
+      throw 'idverse-sdk-ui tag does not exist';
     }
-    if (buildId) {
-      setBuildId(buildId);
-    }
-  }, []);
 
-  function reset() {
-    setSessiontoken(undefined);
-    setBuildId(undefined);
-    setError(undefined);
-    setInit(false);
-    setIdverseSDK(null);
-    setLoading(false);
-    const token = document.getElementById("token") as HTMLInputElement;
-    if (token) {
-      token.value = "";
-    }
-    const buildId = document.getElementById("buildId") as HTMLInputElement;
-    if (buildId) {
-      buildId.value = "";
-    }
-  }
+    sdk.recognizers = [SdkType.IDScan, SdkType.FaceScan];
 
-  /**
-   * Handler for when the SDK is ready to start scanning
-   * @param e Event containing SDK details
-   */
-  function onReady(e: IdverseSdkUiCustomEvent<any>) {
-    console.log("Ready:", e, "sdk:", e.detail);
-    setLoading(false);
-  }
+    sdk_ref.current = sdk;
 
-  /**
-   * Handler for successful ID/face scans
-   * Logs success and removes loading state
-   * @param e Event containing scan results
-   */
-  function onScanSuccess(e: IdverseSdkUiCustomEvent<any>) {
-    console.log("Scan Success", e);
-    const res = e.detail.result?.details?.extractedInfo?.viz;
-    if (res) {
-      setResultData(res);
-    }
-    setLoading(false);
-  }
+    const onAuthenticated = () => {
+      console.log('authenticated');
+      // Eager Loading:
+      // As soon as we are authenticated, we call sdk.loadIDScan()
+      // Assuming you will scan ID first
+      sdk.loadIDScan().then(() => set_is_sdk_id_scan_loaded(true));
 
-  /**
-   * Handler for failed scans
-   * Logs failure and resets the component state
-   * @param e Event containing failure details
-   */
-  function onScanFail(e: IdverseSdkUiCustomEvent<any>) {
-    console.log("scan fail", e);
-  }
+      // We can also call sdk.loadFaceScan() here, i.e
+      // sdk.loadFaceScan().then(() => set_is_sdk_face_scan_loaded(true));
+      // But we can save some network bandwidth and call it later but before reaching the face scan step to use eager loading and save some time
+      // In this example we are calling loadFaceScan() once we reach `Details` screen
+    };
 
-  function onDone(e: IdverseSdkUiCustomEvent<any>) {
-    console.log("done", e);
-  }
+    const onScanSuccess = (e: IdverseSdkUiCustomEvent<any>) => {
+      console.log('Scan Success', e);
 
-  function onPayload(e: IdverseSdkUiCustomEvent<any>) {
-    console.log("payload", e);
-  }
+      if (e.detail.sdkType === SdkType.IDScan) {
+        // When ID Scan, the extracted details are found here
+        const res = e.detail.result?.details?.extractedInfo?.viz;
+        if (res) {
+          set_current_step(Step.ReviewDetails);
+          setResultData(res);
+        }
 
-  /**
-   * Handler for when user clicks try again after failure
-   * Logs event and resets component state
-   * @param e Event details
-   */
-  function onTryAgain(e: IdverseSdkUiCustomEvent<any>) {
-    console.log("try again", e);
-  }
-
-  /**
-   * Handler for SDK errors
-   * Logs error and updates error state with message
-   * @param e Event containing error details
-   */
-  function onError(e: IdverseSdkUiCustomEvent<any>) {
-    console.log("error", e);
-    const message = e.detail.message;
-    alert(message);
-    setError(message);
-  }
-
-  useEffect(() => {
-    if (sessionToken) {
-      const sdk = document.querySelector(
-        "idverse-sdk-ui"
-      ) as HTMLIdverseSdkUiElement;
-      if (!sdk) {
-        throw "idverse-sdk-ui tag does not exist";
+        // Also take into account we provide an id to refer to the document that as this point has been uploaded to your Idverse workspace tenant
+        const document_id = e.detail.id;
+        console.log({ document_id });
       }
 
-      sdk.recognizers = [SdkType.IDScan, SdkType.FaceScan];
-      sdk.enableDFA = enableDFA;
-      // INFO: Face Match the Document Scan & Liveness Scan
-      sdk.enableFaceMatch = enableFaceMatch;
+      if (e.detail.sdkType === SdkType.FaceScan) {
+        // When Face Scan, there is no much info rather than the sdkType itself and the id of the video/resource has been uploaded to your Idverse workspace tenant
+        const face_id = e.detail.id;
+        console.log({ face_id });
 
-      sdk.addEventListener("scanSuccess", onScanSuccess);
-      sdk.addEventListener("scanFail", onScanFail);
-      sdk.addEventListener("tryAgain", onTryAgain);
-      sdk.addEventListener("error", (e) => onError(e as any));
-      sdk.addEventListener("fatalError", (e) => onError(e as any));
-      sdk.addEventListener("done", onDone);
-      sdk.addEventListener("payload", onPayload);
+        set_current_step(Step.End);
+      }
+    };
 
-      sdk.addEventListener("authenticated", (e) => {
-        console.log("authenticated", e);
-        setInit(e.detail);
-        setLoading(false);
-      });
-      sdk.addEventListener("ready", onReady);
+    sdk.addEventListener('authenticated', onAuthenticated);
+    sdk.addEventListener('scanSuccess', onScanSuccess);
 
-      sdk.addEventListener("faceScanClosed", (e) => {
-        console.log("face scan closed", e);
-        setLoading(false);
-      });
+    return () => {
+      sdk.removeEventListener('authenticated', onAuthenticated);
+    };
+  }, []);
 
-      setIdverseSDK(sdk);
-    }
-  }, [sessionToken, enableDFA, enableFaceMatch]);
-
-  /**
-   * Handles starting the process.
-   *
-   * @param {Boolean} state - Whether to scan both sides of the ID
-   */
-  const handleStart = async (state: boolean) => {
-    if (!idverseSDK) return;
-    setLoading(true);
-    idverseSDK.setScanBothSides(state);
-    try {
-      idverseSDK.startIDScan();
-    } catch (e: any) {
-      console.error(e);
-      setError(e.message);
-    }
+  const handleContinueFromIntro = () => {
+    set_current_step(Step.IdScan);
   };
 
-  /**
-   * Handles starting the liveness scan.
-   */
-  const handleStartLiveness = async () => {
-    if (!idverseSDK) return;
-    setLoading(true);
-    try {
-      idverseSDK.startFaceScan();
-    } catch (e: any) {
-      console.error(e);
-      setError(e.message);
-    }
+  const handleStartFaceScan = () => {
+    sdk_ref.current?.startFaceScan();
   };
 
-  /**
-   * Handles closing the session.
-   */
-  const handleDone = async () => {
-    if (!idverseSDK) return;
-    setResultData(undefined);
-    setSessiontoken(undefined);
-    setBuildId(undefined);
-    setLoading(true);
-    await idverseSDK.close();
-    setLoading(false);
-    setInit(false);
-  };
-
-  /**
-   * Handles continuing the session. Allows the user to continue scanning multiple times.
-   */
-  const handleContinue = async () => {
-    if (!idverseSDK) return;
-    setResultData(undefined);
-  };
-
-  /**
-   * Handles initializing the session.
-   */
-  const handleInit = () => {
-    const token = (document.getElementById("token") as HTMLInputElement)?.value;
-    if (token && sessionUrl && buildId) {
-      setSessiontoken(token);
-      // Save the session token and build ID to local storage for convenience
-      localStorage.setItem(STORAGE_KEY, sessionUrl);
-      localStorage.setItem(BUILD_KEY, buildId);
-    }
-    setLoading(true);
-  };
-
-  /**
-   * Renders the component.
-   */
   return (
-    <div>
-      {resultData ? (
-        <Details
-          details={resultData}
-          onContinue={() => handleContinue()}
-          onDone={() => handleDone()}
+    <div className="App">
+      {current_step == Step.Intro && (
+        <Intro onContinue={handleContinueFromIntro} />
+      )}
+      {sdk_ref.current && current_step == Step.IdScan && (
+        <IdScan
+          sdk={sdk_ref.current}
+          is_sdk_id_scan_loaded={is_sdk_id_scan_loaded}
         />
-      ) : (
-        <div className="App">
-          <div className="container">
-            <div className="header">
-              <img src="/logo.svg" width={200} alt="OCR Labs logo" />
-
-              <h1>Document and Liveness 5 Flow Example</h1>
-              <p>
-                {loading
-                  ? "Loading..."
-                  : init
-                  ? "Choose one of the options below."
-                  : "Please enter your session token and build ID."}
-              </p>
-            </div>
-
-            {!init && !loading && (
-              <div className="input-group">
-                <div className="input-field">
-                  <label htmlFor="token">Session Token</label>
-                  <input
-                    type="text"
-                    id="token"
-                    placeholder="Enter session token"
-                  />
-                </div>
-                <div className="input-field">
-                  <label htmlFor="buildId">Build ID</label>
-                  <input
-                    type="text"
-                    id="buildId"
-                    placeholder="Enter build ID"
-                    value={buildId}
-                    onChange={(e) => setBuildId(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="enableDFA">Enable DFA</label>
-                  <input
-                    type="checkbox"
-                    id="enableDFA"
-                    onChange={() => setEnableDFA(!enableDFA)}
-                    checked={enableDFA}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="enableFaceMatch">Enable Face Match</label>
-                  <input
-                    type="checkbox"
-                    id="enableFaceMatch"
-                    onChange={() => setEnableFaceMatch(!enableFaceMatch)}
-                    checked={enableFaceMatch}
-                  />
-                </div>
-                <div className="input-field">
-                  <label htmlFor="sessionUrl">Session API URL</label>
-                  <input
-                    type="text"
-                    id="sessionUrl"
-                    placeholder="Enter session URL"
-                    onChange={(e) => setSessionUrl(e.target.value)}
-                    value={sessionUrl}
-                  />
-                </div>
-                <div>
-                  <button onClick={handleInit} className="my-button">
-                    Init
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="actions">
-              {loading && (
-                <div className="loading">
-                  <img src="/images/loading.svg" alt="" />
-                </div>
-              )}
-              {!loading && error == null && init && (
-                <>
-                  <div onClick={() => handleStart(false)}>
-                    <div className="icon">
-                      <img src="/images/frontID.svg" alt="" />
-                    </div>
-                    <p>Front of ID</p>
-                  </div>
-                  <div onClick={() => handleStart(true)}>
-                    <div className="icon">
-                      <img src="/images/backID.svg" alt="" />
-                    </div>
-                    <p>Front and Back of ID</p>
-                  </div>
-                  <div onClick={() => handleStartLiveness()}>
-                    <div className="icon">
-                      <img src="/images/liveness.svg" alt="" />
-                    </div>
-                    <p>Liveness Capture</p>
-                  </div>
-                  <div onClick={() => handleDone()}>
-                    <p>Complete</p>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
       )}
-      {error && (
-        <idv-modal warning visible heading="An error occurred.">
-          <p>{error}</p>
-          <div className="buttons">
-            <idv-button
-              onClick={() => reset()}
-              class="button"
-              label="Close"
-              variant="primary outline"
-            ></idv-button>
-          </div>
-        </idv-modal>
+      {sdk_ref.current && current_step == Step.ReviewDetails && (
+        <Details
+          sdk={sdk_ref.current}
+          details={resultData}
+          // In this example `onContinue` is called only if face scan wasm was loaded
+          // (see eager loading logic in `Details` component)
+          onContinue={handleStartFaceScan}
+        />
       )}
 
-      {sessionToken && buildId && (
-        <idverse-sdk-ui
-          session-url={sessionUrl}
-          session-token={sessionToken}
-          session-build-id={buildId}
-          enable-dfa={enableDFA}
-          enable-face-match={enableFaceMatch}
-          auto-complete={false}
-        ></idverse-sdk-ui>
+      {sdk_ref.current && current_step == Step.End && (
+        // We call sdk.close() in this step. See inside `End` component
+        <End sdk={sdk_ref.current} />
       )}
+
+      {/* Initialize endpoint is called as soon as <idverse-sdk-ui/> is in the DOM */}
+      <idverse-sdk-ui
+        session-url={sessionUrl}
+        session-token={sessionToken}
+        session-build-id={buildId}
+        // Use `enable-dfa` prop to choose whether or not DFA engine is enabled, if value is static and will not change
+        // If for some reason value is dynamic (needs to change) use `sdk.setEnableDFA()`
+        enable-dfa={true}
+        // Use `enable-face-match` prop to choose whether or not FaceMatch engine is enabled, if value is static and will not change
+        // If for some reason value is dynamic (needs to change) use `sdk.setEnableFaceMatch()`
+        enable-face-match={true}
+        skip-face-scan-intro={true}
+      />
     </div>
   );
 }
-
-export default App;

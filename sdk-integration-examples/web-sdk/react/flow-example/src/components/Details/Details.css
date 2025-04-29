@@ -2,6 +2,11 @@
   width: 100%;
   min-height: 100vh;
   background-color: #fff;
+  z-index: initial;
+}
+
+.details.on-top {
+  z-index: 999;
 }
 
 .details-header {
@@ -84,7 +89,7 @@
   margin: 25px 0 30px 0;
 }
 
-.details-consent-checkbox input[type="checkbox"] {
+.details-consent-checkbox input[type='checkbox'] {
   margin-top: 3px;
 }
 
@@ -108,7 +113,11 @@
   margin-bottom: 10px;
 }
 
-.details-submit-button:hover {
+.details-submit-button:disabled {
+  background: gray;
+}
+
+.details-submit-button:not(:disabled):hover {
   background: #0a2c44;
 }
 
