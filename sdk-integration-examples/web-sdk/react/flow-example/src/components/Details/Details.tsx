@@ -1,26 +1,52 @@
-import "./Details.css";
+import { useEffect, useState } from 'react';
+import './Details.css';
 
 export const Details = ({
+  sdk,
   details,
   onContinue,
-  onDone,
 }: {
+  sdk: HTMLIdverseSdkUiElement;
   details: any[];
   onContinue: () => void;
-  onDone: () => void;
 }) => {
+  const [continueButtonHasBeenClicked, setContinueButtonHasBeenClicked] =
+    useState(false);
+
+  const [is_sdk_face_scan_loaded, set_is_sdk_face_scan_loaded] =
+    useState(false);
+
+  useEffect(() => {
+    // Eager loading face scan wasm, to use it in the next step which is face scan
+    // Even if there might be a step between this and face scan this is a good place to eager load it
+    sdk.loadFaceScan().then(() => set_is_sdk_face_scan_loaded(true));
+  }, []);
+
+  useEffect(() => {
+    if (is_sdk_face_scan_loaded && continueButtonHasBeenClicked) {
+      // Only transition next step (Face Scan) if wasm was loaded
+      onContinue();
+    }
+  }, [is_sdk_face_scan_loaded, continueButtonHasBeenClicked]);
+
+  const handleContinue = () => {
+    // In the case face scan wasm is not loaded yet, the "Continue" button change to "Loading"
+    // This is just a UX pattern we advice,but if want you can replace this with a loading screen
+    setContinueButtonHasBeenClicked(true);
+  };
+
   const fields = [];
 
   const order = [
-    "full_name",
-    "given_name",
-    "first_name",
-    "middle_name",
-    "last_name",
-    "document_number",
-    "birth_date",
-    "expiry_date",
-    "document_id",
+    'full_name',
+    'given_name',
+    'first_name',
+    'middle_name',
+    'last_name',
+    'document_number',
+    'birth_date',
+    'expiry_date',
+    'document_id',
   ];
 
   details.sort(function (a: any, b: any) {
@@ -36,14 +62,14 @@ export const Details = ({
   for (let i = 0; i < details.length; i++) {
     const field = details[i];
     fields.push({
-      label: field.fieldName.replace(/_/g, " "),
+      label: field.fieldName.replace(/_/g, ' '),
       name: field.fieldName,
       value: field.fieldValue,
     });
   }
 
   return (
-    <div className="details">
+    <div className={`details ${continueButtonHasBeenClicked ? '' : 'on-top'}`}>
       <div className="details-header">
         <h4 className="details-header-title">Confirm your details</h4>
       </div>
@@ -70,10 +96,13 @@ export const Details = ({
           </p>
         </div>
 
-        <button className="details-submit-button" onClick={onContinue}>
-          Continue
+        <button
+          disabled={continueButtonHasBeenClicked}
+          className="details-submit-button"
+          onClick={handleContinue}
+        >
+          {continueButtonHasBeenClicked ? 'Loading' : 'Continue with Face Scan'}
         </button>
-        <button className="details-submit-button" onClick={onDone}>Done</button>
       </div>
     </div>
   );
