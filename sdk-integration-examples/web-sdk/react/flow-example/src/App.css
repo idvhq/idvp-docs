@@ -1,147 +1,148 @@
 .App {
-    background: #051c2c;
-    min-height: 100vh;
-    width: 100%;
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: self-start;
+  background: #051c2c;
+  min-height: 100vh;
+  width: 100%;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: self-start;
 }
 
 .container {
-    width: 100%;
-    max-width: 420px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 140px;
-    padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 140px;
+  padding: 20px 0;
 }
 
 .header img {
-    padding-top: 20px;
+  padding-top: 20px;
 }
 
 .header h1 {
-    font-size: 31px;
-    font-weight: 600;
-    padding: 15px 0 5px;
+  font-size: 31px;
+  font-weight: 600;
+  padding: 15px 0 5px;
 }
 
 .header p {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 26px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 26px;
 }
 
 .actions {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-items: center;
-    gap: 20px;
-    padding: 20px 0;
-    overflow-y: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  gap: 20px;
+  padding: 20px 0;
+  overflow-y: auto;
 }
 
 .action-item {
-    font-size: 18px;
-    cursor: pointer;
-    text-align: center;
-    font-weight: 500;
-    user-select: none;
-    background-color: rgba(207, 210, 211, 0.1);
-    padding: 15px;
-    border-radius: 19px;
-    min-height: 130px;
-    max-width: 290px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.2s ease;
+  font-size: 18px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 500;
+  user-select: none;
+  background-color: rgba(207, 210, 211, 0.1);
+  padding: 15px;
+  border-radius: 19px;
+  min-height: 130px;
+  max-width: 290px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
 }
 
 .action-item:hover {
-    background-color: #34cccc;
+  background-color: #34cccc;
 }
 
-.action-item input[type="file"] {
-    display: none;
+.action-item input[type='file'] {
+  display: none;
 }
 
 .icon {
-    padding: 15px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+  padding: 15px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .icon img {
-    display: block;
-    margin: 0 auto;
+  display: block;
+  margin: 0 auto;
 }
 
 .input-group {
-    width: 100%;
-    max-width: 290px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 20px 0;
+  width: 100%;
+  max-width: 290px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px 0;
 }
 
 .input-field {
-    width: 100%;
-    background-color: rgba(207, 210, 211, 0.1);
-    border-radius: 8px;
-    padding: 12px 15px;
+  width: 100%;
+  background-color: rgba(207, 210, 211, 0.1);
+  border-radius: 8px;
+  padding: 12px 15px;
 }
 
 .input-field label {
-    display: block;
-    font-size: 14px;
-    color: #fff;
-    padding-bottom: 5px;
-    font-weight: 500;
+  display: block;
+  font-size: 14px;
+  color: #fff;
+  padding-bottom: 5px;
+  font-weight: 500;
 }
 
 .input-field input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-size: 16px;
-    font-family: inherit;
-    padding: 0;
-    outline: none;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  font-family: inherit;
+  padding: 0;
+  outline: none;
 }
 
 .input-field input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .my-button {
-    background-color: #34cccc;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-    transition: opacity 0.2s ease;
+  background-color: #34cccc;
+  color: #fff;
+  padding: 10px 35px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s ease;
+  font-size: large;
 }
 
 .my-button:hover {
-    opacity: 0.9;
+  opacity: 0.9;
 }
