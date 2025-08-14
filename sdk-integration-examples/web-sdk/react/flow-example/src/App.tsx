@@ -56,10 +56,15 @@ export function App() {
 
       if (e.detail.sdkType === SdkType.IDScan) {
         // When ID Scan, the extracted details are found here
-        const res = e.detail.result?.details?.extractedInfo?.viz;
+        const res = e.detail.result?.details?.extractedInfo?.viz?.primary;
         if (res) {
           set_current_step(Step.ReviewDetails);
-          setResultData(res);
+          setResultData(
+            Object.entries(res).map(([key, value]) => ({
+              fieldName: key,
+              fieldValue: value,
+            }))
+          );
         }
 
         // Also take into account we provide an id to refer to the document that as this point has been uploaded to your Idverse workspace tenant
