@@ -1,1 +1,4 @@
 sdk-integration-examples/idverse-sdk-browser
+.vscode
+.DS_Store
+*.tsbuildinfo
