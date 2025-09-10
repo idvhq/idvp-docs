@@ -3,12 +3,15 @@ import idverselogo from "/logo.svg";
 import loadingSvg from "./assets/loading.svg";
 import "./App.css";
 
-import "@idverse/idverse-sdk-browser/ui";
+const sessionUrl = import.meta.env.VITE_SDK_SESSION_URL;
+const sessionToken = import.meta.env.VITE_SDK_SESSION_TOKEN;
+const buildId = import.meta.env.VITE_SDK_SESSION_BUILD_ID;
+
 import {
   IDScanRecognizerResult,
   IdverseSdkUiCustomEvent,
-} from "@idverse/idverse-sdk-browser/ui";
-import { SdkType } from "@idverse/idverse-sdk-browser";
+  SdkType
+} from "@idverse/idverse-sdk-ui";
 
 import { Details } from "./components/Details/Details";
 
@@ -16,7 +19,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string>();
-  const [scanBothSides, setScanBothSides] = useState(false);
+  const [_scanBothSides, setScanBothSides] = useState(false);
   const [resultData, setResultData] = useState<IDScanRecognizerResult>();
   const [idverseSDK, setIdverseSDK] = useState<HTMLIdverseSdkUiElement | null>(
     null
@@ -136,11 +139,20 @@ function App() {
         />
       )}
 
+      {/* Initialize endpoint is called as soon as <idverse-sdk-ui/> is in the DOM */}
       <idverse-sdk-ui
-        session-url="YOUR_SESSION_URL"
-        session-token="YOUR_SESSION_TOKEN"
-        session-build-id="YOUR_SESSION_BUILD_ID"
-      ></idverse-sdk-ui>
+        session-url={sessionUrl}
+        session-token={sessionToken}
+        session-build-id={buildId}
+        // Use `enable-dfa` prop to choose whether or not DFA engine is enabled, if value is static and will not change
+        // If for some reason value is dynamic (needs to change) use `sdk.setEnableDFA()`
+        enable-dfa={true}
+        // Use `enable-face-match` prop to choose whether or not FaceMatch engine is enabled, if value is static and will not change
+        // If for some reason value is dynamic (needs to change) use `sdk.setEnableFaceMatch()`
+        enable-face-match={true}
+        skip-face-scan-intro={true}
+      // worker-path="./sdk-idverse/assets/IDVerseSDK.worker.min.XXXXX.js"
+      />
 
       <p className="read-the-docs">Click on the IDVerse logo to learn more</p>
     </>

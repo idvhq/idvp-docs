@@ -5,9 +5,8 @@ import {
   IDScanRecognizerResult,
   IdverseSdkUiCustomEvent,
   SdkError,
-} from "@idverse/idverse-sdk-browser/ui";
-import "@idverse/idverse-sdk-browser/ui";
-import { SdkType } from "@idverse/idverse-sdk-browser";
+  SdkType
+} from "@idverse/idverse-sdk-ui";
 
 import { DetailsComponent } from "./details/details.component";
 
@@ -27,6 +26,9 @@ export class AppComponent {
   errorText: string | null = null;
   scanBothSides: boolean = false;
   resultData: IDScanRecognizerResult | null = null;
+  sessionUrl = import.meta.env["NG_APP_PUBLIC_SDK_SESSION_URL"];
+  sessionToken = import.meta.env["NG_APP_PUBLIC_SDK_SESSION_TOKEN"];
+  buildId = import.meta.env["NG_APP_PUBLIC_SDK_SESSION_BUILD_ID"];
 
   private onSdkReady = () => {
     console.log("Successfully loaded");

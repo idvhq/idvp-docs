@@ -5,10 +5,9 @@ import {
   IdverseSdkUiCustomEvent,
   SdkError,
   FaceScanRecognizerResult,
-} from "@idverse/idverse-sdk-browser/ui";
-import { SdkType } from "@idverse/idverse-sdk-browser";
+  SdkType
+} from "@idverse/idverse-sdk-ui";
 
-import "@idverse/idverse-sdk-browser/ui";
 
 @Component({
   selector: "app-root",
@@ -25,6 +24,9 @@ export class AppComponent {
   ready: boolean = false;
   errorText: string | null = null;
   resultData: FaceScanRecognizerResult | null = null;
+  sessionUrl = import.meta.env["NG_APP_PUBLIC_SDK_SESSION_URL"];
+  sessionToken = import.meta.env["NG_APP_PUBLIC_SDK_SESSION_TOKEN"];
+  buildId = import.meta.env["NG_APP_PUBLIC_SDK_SESSION_BUILD_ID"];
 
   private onSdkReady = () => {
     console.log("Successfully loaded");

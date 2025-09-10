@@ -17,18 +17,17 @@
   <idv-modal *ngIf="errorText" warning visible heading="An error occurred.">
     <p>{{ errorText }}</p>
     <div>
-      <idv-button
-        (click)="onClearError()"
-        label="Close"
-        variant="primary outline"
-      ></idv-button>
+      <idv-button (click)="onClearError()" label="Close" variant="primary outline"></idv-button>
     </div>
   </idv-modal>
-  <idverse-sdk-ui
-    session-url="YOUR_SESSION_URL"
-    session-token="YOUR_SESSION_TOKEN"
-    session-build-id="YOUR_SESSION_BUILD_ID"
-  ></idverse-sdk-ui>
+
+  <!-- Initialize endpoint is called as soon as <idverse-sdk-ui/> is in the DOM -->
+  <!-- // Use `enable-dfa` prop to choose whether or not DFA engine is enabled, if value is static and will not change // If for some reason value is dynamic (needs to change) use `sdk.setEnableDFA()` -->
+  <!-- // Use `enable-face-match` prop to choose whether or not FaceMatch engine is enabled, if value is static and will not change // If for some reason value is dynamic (needs to change) use `sdk.setEnableFaceMatch()` enable-face-match={true}  -->
+  <!-- worker-path="./sdk-idverse/assets/IDVerseSDK.worker.min.XXXXX.js"  -->
+  <idverse-sdk-ui [attr.session-url]="sessionUrl" [attr.session-token]="sessionToken" [attr.session-build-id]="buildId"
+    [attr.enable-dfa]="true" [attr.enable-face-match]="true" [attr.skip-face-scan-intro]="true"></idverse-sdk-ui>
+
 
   <p class="read-the-docs">Click on the IDVerse logo to learn more</p>
 </div>
