@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import Main from "./components/Main.vue";
+import { defineCustomElements } from "@idverse/idverse-sdk-ui/loader";
+
+defineCustomElements(window, {
+  resourcesUrl: "/sdk-idverse/",
+});
 </script>
 
 <template>

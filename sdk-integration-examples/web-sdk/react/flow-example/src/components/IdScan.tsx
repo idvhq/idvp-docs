@@ -16,7 +16,7 @@ export function IdScan({ sdk, is_sdk_id_scan_loaded }: IdScanProps) {
       sdk.startIDScan();
     }
 
-    const onScannerCreated = (e) => {
+    const onScannerCreated = (e: unknown) => {
       // This event `scannerCreated` is useful to tell you that in this moment,
       // the scan process will beging
       // the SDK UI screen "Get Ready to Scan the Front of your ID" appears at this moment

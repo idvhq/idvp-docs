@@ -4,8 +4,7 @@ const buildId = import.meta.env.VITE_SDK_SESSION_BUILD_ID;
 
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
-import { IdverseSdkUiCustomEvent } from '@idverse/idverse-sdk-browser/ui';
-import { SdkType } from '@idverse/idverse-sdk-browser';
+import { IdverseSdkUiCustomEvent, SdkType } from '@idverse/idverse-sdk-ui';
 
 import { Details } from './components/Details/Details';
 import { Intro } from './components/Intro';
@@ -19,7 +18,7 @@ enum Step {
   End,
 }
 
-export function App() {
+function App() {
   const [current_step, set_current_step] = useState(Step.Intro);
   const [is_sdk_id_scan_loaded, set_is_sdk_id_scan_loaded] = useState(false);
   const [resultData, setResultData] = useState<any>();
@@ -135,7 +134,10 @@ export function App() {
         // If for some reason value is dynamic (needs to change) use `sdk.setEnableFaceMatch()`
         enable-face-match={true}
         skip-face-scan-intro={true}
+      // worker-path="./sdk-idverse/assets/IDVerseSDK.worker.min.XXXXX.js"
       />
     </div>
   );
 }
+
+export default App;
