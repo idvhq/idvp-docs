@@ -7,7 +7,7 @@ The SDK documentation is available at [idvplatform.docs.idverse.com/docs/getting
 ## Quick Start
 
 - Make sure you have [Node.js](https://nodejs.org/) installed
-- Download the built SDK from your Tenant session
+- Download an SDK from your IDVerse Core Workspace
 - Extract the `sdk-build-******.zip` and copy `idverse-sdk-browser` folder to the `sdk-integration-examples` folder
 - For each app you will need to run `npm install` to get all the dependencies then update the code below with parameters with those from your Tenant session:
 
@@ -19,7 +19,17 @@ The SDK documentation is available at [idvplatform.docs.idverse.com/docs/getting
 ></idverse-sdk-ui>
 ```
 
-- Run the app with `npm run host` (your app will be available on the local network for testing with other devices as well)
+For the React `flow-example` app, create a `.env.local` file at the root of the project with the following content (add real variables in place of the placeholders): 
+
+```bash
+VITE_SDK_SESSION_URL=https://........
+VITE_SDK_SESSION_TOKEN=idv_..........
+VITE_SDK_SESSION_BUILD_ID=build_.....
+```
+
+You do not need to alter the values within the `idverse-sdk-ui` component for the `flow-example` app.
+
+- Run the app with `npm run host` (your app will be available on the local network for testing with other devices as well).
 
 ## Example Apps
 
