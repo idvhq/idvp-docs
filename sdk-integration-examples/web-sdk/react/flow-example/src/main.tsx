@@ -26,5 +26,5 @@ defineCustomElements(window, {
   // It can be any path where you are hosting the assets (which were provided along with the sdk build)
   // Copy the whole folder called assets from idverse-sdk-browser/ui/dist/idverse-sdk-browser-ui/assets
   // i.e now images are expected to be found in /sdk-idverse/assets/images
-  resourcesUrl: "/sdk-idverse/",
+  resourcesUrl: "/idv-sdk-web/",
 });
