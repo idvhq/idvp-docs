@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 type IdScanProps = {
-  sdk: HTMLIdverseSdkUiElement;
+  sdk: HTMLIdvSdkWebElement;
   is_sdk_id_scan_loaded: boolean;
 };
 
@@ -20,7 +20,7 @@ export function IdScan({ sdk, is_sdk_id_scan_loaded }: IdScanProps) {
       // This event `scannerCreated` is useful to tell you that in this moment,
       // the scan process will beging
       // the SDK UI screen "Get Ready to Scan the Front of your ID" appears at this moment
-      console.log('scannerCreated:', { e });
+      console.log("scannerCreated:", { e });
 
       // So we hide our custom loading UI so it doesn't interfere with the builtin SDK UI
       // In some case you might not need to hide your loading UI, as builtin SDK UI has a z-index
@@ -29,15 +29,15 @@ export function IdScan({ sdk, is_sdk_id_scan_loaded }: IdScanProps) {
       setIsLoading(false);
     };
 
-    sdk.addEventListener('scannerCreated', onScannerCreated);
+    sdk.addEventListener("scannerCreated", onScannerCreated);
 
-    return () => sdk.removeEventListener('scannerCreated', onScannerCreated);
+    return () => sdk.removeEventListener("scannerCreated", onScannerCreated);
   }, [is_sdk_id_scan_loaded, sdk]);
 
   if (isLoading) {
     // You can use other Loading ui if you want, use of built-in <idv-id-scan-intro/> is optional.
     // You can even use the same message (instead of  "Preparing" in this example) to make it appear is the same UI when the Scan process actually begin
-    return <idv-id-scan-intro visible={true} description={'Preparing'} />;
+    return <idv-id-scan-intro visible={true} description={"Preparing"} />;
   }
 
   return (

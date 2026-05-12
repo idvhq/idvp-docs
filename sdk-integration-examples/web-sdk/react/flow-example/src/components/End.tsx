@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 type EndProps = {
-  sdk: HTMLIdverseSdkUiElement;
+  sdk: HTMLIdvSdkWebElement;
 };
 
 export function End({ sdk }: EndProps) {
