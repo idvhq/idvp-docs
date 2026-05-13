@@ -12,11 +12,10 @@ The SDK documentation is available at [idvplatform.docs.idverse.com/docs/getting
 - For each app you will need to run `npm install` to get all the dependencies then update the code below with parameters with those from your Tenant session:
 
 ```jsx
-<idverse-sdk-ui
+<idv-sdk-web
   session-url="YOUR_SESSION_URL"
   session-token="YOUR_SESSION_TOKEN"
-  session-build-id="YOUR_SESSION_BUILD_ID"
-></idverse-sdk-ui>
+></idv-sdk-web>
 ```
 
 For the React `flow-example` app, create a `.env.local` file at the root of the project with the following content (add real variables in place of the placeholders): 
@@ -24,10 +23,9 @@ For the React `flow-example` app, create a `.env.local` file at the root of the 
 ```bash
 VITE_SDK_SESSION_URL=https://........
 VITE_SDK_SESSION_TOKEN=idv_..........
-VITE_SDK_SESSION_BUILD_ID=build_.....
 ```
 
-You do not need to alter the values within the `idverse-sdk-ui` component for the `flow-example` app.
+You do not need to alter the values within the `idv-sdk-web` component for the `flow-example` app.
 
 - Run the app with `npm run host` (your app will be available on the local network for testing with other devices as well).
 
