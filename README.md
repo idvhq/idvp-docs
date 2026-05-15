@@ -7,8 +7,6 @@ The SDK documentation is available at [idvplatform.docs.idverse.com/docs/getting
 ## Quick Start
 
 - Make sure you have [Node.js](https://nodejs.org/) installed
-- Download an SDK from your IDVerse Core Workspace
-- Extract the `sdk-build-******.zip` and copy `idverse-sdk-browser` folder to the `sdk-integration-examples` folder
 - For each app you will need to run `npm install` to get all the dependencies then update the code below with parameters with those from your Tenant session:
 
 ```jsx
