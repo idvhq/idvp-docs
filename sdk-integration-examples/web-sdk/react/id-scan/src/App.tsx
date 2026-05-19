@@ -6,11 +6,7 @@ import idverselogo from "/logo.svg";
 import loadingSvg from "./assets/loading.svg";
 import "./App.css";
 
-import {
-  IDScanRecognizerResult,
-  IdvSdkWebCustomEvent,
-  SdkType
-} from "@idverse/idv-sdk-web";
+import { IdvSdkWebCustomEvent, SdkType } from "@idverse/idv-sdk-web";
 
 import { Details } from "./components/Details/Details";
 
@@ -19,9 +15,9 @@ function App() {
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string>();
   const [_scanBothSides, setScanBothSides] = useState(false);
-  const [resultData, setResultData] = useState<IDScanRecognizerResult>();
+  const [resultData, setResultData] = useState<any>();
   const [idverseSDK, setIdverseSDK] = useState<HTMLIdvSdkWebElement | null>(
-    null
+    null,
   );
 
   const onSdkReady = () => {
@@ -31,8 +27,14 @@ function App() {
   };
 
   const onScanSuccess = (ev: IdvSdkWebCustomEvent<any>) => {
-    console.log(ev.detail);
-    setResultData(ev.detail.result.details.extractedInfo.viz);
+    // When ID Scan, the extracted details are found here
+    const res = ev.detail.result?.details?.extractedInfo?.viz?.primary;
+    setResultData(
+      Object.entries(res).map(([key, value]) => ({
+        fieldName: key,
+        fieldValue: value,
+      })),
+    );
   };
 
   const onScanFail = (ev: IdvSdkWebCustomEvent<any>) => {
@@ -61,9 +63,7 @@ function App() {
   };
 
   useEffect(() => {
-    const sdk = document.querySelector(
-      "idv-sdk-web"
-    ) as HTMLIdvSdkWebElement;
+    const sdk = document.querySelector("idv-sdk-web") as HTMLIdvSdkWebElement;
     if (!sdk) {
       throw "idv-sdk-web tag does not exist";
     }
@@ -149,7 +149,7 @@ function App() {
         // If for some reason value is dynamic (needs to change) use `sdk.setEnableFaceMatch()`
         enable-face-match={true}
         skip-face-scan-intro={true}
-      // worker-path="./sdk-idverse/assets/IDVerseSDK.worker.min.XXXXX.js"
+        // worker-path="./sdk-idverse/assets/IDVerseSDK.worker.min.XXXXX.js"
       />
 
       <p className="read-the-docs">Click on the IDVerse logo to learn more</p>
