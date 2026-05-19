@@ -32,6 +32,8 @@ function App() {
 
     sdk.recognizers = [SdkType.IDScan, SdkType.FaceScan];
 
+    sdk.enableDFA = true;
+    sdk.enableFaceMatch = true;
     sdk_ref.current = sdk;
 
     const onAuthenticated = () => {
@@ -130,7 +132,6 @@ function App() {
         // If for some reason value is dynamic (needs to change) use `sdk.setEnableFaceMatch()`
         enable-face-match={true}
         skip-face-scan-intro={true}
-        // worker-path="./sdk-idverse/assets/IDVerseSDK.worker.min.XXXXX.js"
       />
     </div>
   );
