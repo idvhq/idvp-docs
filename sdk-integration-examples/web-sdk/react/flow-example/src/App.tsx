@@ -32,8 +32,6 @@ function App() {
 
     sdk.recognizers = [SdkType.IDScan, SdkType.FaceScan];
 
-    sdk.enableDFA = true;
-    sdk.enableFaceMatch = true;
     sdk_ref.current = sdk;
 
     const onAuthenticated = () => {
@@ -41,6 +39,9 @@ function App() {
       // Eager Loading:
       // As soon as we are authenticated, we call sdk.loadIDScan()
       // Assuming you will scan ID first
+      // We need to manually setting enableDFAA and enableFaceMatch when we are eager loading.
+      sdk.enableDFA = true;
+      sdk.enableFaceMatch = true;
       sdk.loadIDScan().then(() => set_is_sdk_id_scan_loaded(true));
 
       // We can also call sdk.loadFaceScan() here, i.e
