@@ -1,17 +1,12 @@
+const sessionUrl = import.meta.env.VITE_SDK_SESSION_URL;
+const sessionToken = import.meta.env.VITE_SDK_SESSION_TOKEN;
+
 import { useEffect, useState } from "react";
 import idverselogo from "/logo.svg";
 import loadingSvg from "./assets/loading.svg";
 import "./App.css";
 
-const sessionUrl = import.meta.env.VITE_SDK_SESSION_URL;
-const sessionToken = import.meta.env.VITE_SDK_SESSION_TOKEN;
-const buildId = import.meta.env.VITE_SDK_SESSION_BUILD_ID;
-
-import {
-  IDScanRecognizerResult,
-  IdverseSdkUiCustomEvent,
-  SdkType
-} from "@idverse/idverse-sdk-ui";
+import { IdvSdkWebCustomEvent, SdkType } from "@idverse/idv-sdk-web";
 
 import { Details } from "./components/Details/Details";
 
@@ -20,9 +15,9 @@ function App() {
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string>();
   const [_scanBothSides, setScanBothSides] = useState(false);
-  const [resultData, setResultData] = useState<IDScanRecognizerResult>();
-  const [idverseSDK, setIdverseSDK] = useState<HTMLIdverseSdkUiElement | null>(
-    null
+  const [resultData, setResultData] = useState<any>();
+  const [idverseSDK, setIdverseSDK] = useState<HTMLIdvSdkWebElement | null>(
+    null,
   );
 
   const onSdkReady = () => {
@@ -31,27 +26,33 @@ function App() {
     console.log("Successfully loaded");
   };
 
-  const onScanSuccess = (ev: IdverseSdkUiCustomEvent<any>) => {
-    console.log(ev.detail);
-    setResultData(ev.detail.result.details.extractedInfo.viz);
+  const onScanSuccess = (ev: IdvSdkWebCustomEvent<any>) => {
+    // When ID Scan, the extracted details are found here
+    const res = ev.detail.result?.details?.extractedInfo?.viz?.primary;
+    setResultData(
+      Object.entries(res).map(([key, value]) => ({
+        fieldName: key,
+        fieldValue: value,
+      })),
+    );
   };
 
-  const onScanFail = (ev: IdverseSdkUiCustomEvent<any>) => {
+  const onScanFail = (ev: IdvSdkWebCustomEvent<any>) => {
     console.log("failed to scan.", ev);
     setError(ev.detail.toString());
   };
 
-  const onError = (e: IdverseSdkUiCustomEvent<any>) => {
+  const onError = (e: IdvSdkWebCustomEvent<any>) => {
     setLoading(false);
     console.error("SDKError", e.detail);
     setError(e.detail.message.toString());
   };
 
-  const onFirstScan = (e: IdverseSdkUiCustomEvent<any>) => {
+  const onFirstScan = (e: IdvSdkWebCustomEvent<any>) => {
     console.log("first scan", e);
   };
 
-  const onAuthenticationSuccess = (e: IdverseSdkUiCustomEvent<any>) => {
+  const onAuthenticationSuccess = (e: IdvSdkWebCustomEvent<any>) => {
     console.log("authentication success", e);
     setLoading(false);
     setReady(true);
@@ -62,11 +63,9 @@ function App() {
   };
 
   useEffect(() => {
-    const sdk = document.querySelector(
-      "idverse-sdk-ui"
-    ) as HTMLIdverseSdkUiElement;
+    const sdk = document.querySelector("idv-sdk-web") as HTMLIdvSdkWebElement;
     if (!sdk) {
-      throw "idverse-sdk-ui tag does not exist";
+      throw "idv-sdk-web tag does not exist";
     }
     sdk.recognizers = [SdkType.IDScan];
     sdk.enableDFA = true;
@@ -139,11 +138,10 @@ function App() {
         />
       )}
 
-      {/* Initialize endpoint is called as soon as <idverse-sdk-ui/> is in the DOM */}
-      <idverse-sdk-ui
+      {/* Initialize endpoint is called as soon as <idv-sdk-web/> is in the DOM */}
+      <idv-sdk-web
         session-url={sessionUrl}
         session-token={sessionToken}
-        session-build-id={buildId}
         // Use `enable-dfa` prop to choose whether or not DFA engine is enabled, if value is static and will not change
         // If for some reason value is dynamic (needs to change) use `sdk.setEnableDFA()`
         enable-dfa={true}
@@ -151,7 +149,7 @@ function App() {
         // If for some reason value is dynamic (needs to change) use `sdk.setEnableFaceMatch()`
         enable-face-match={true}
         skip-face-scan-intro={true}
-      // worker-path="./sdk-idverse/assets/IDVerseSDK.worker.min.XXXXX.js"
+        // worker-path="./sdk-idverse/assets/IDVerseSDK.worker.min.XXXXX.js"
       />
 
       <p className="read-the-docs">Click on the IDVerse logo to learn more</p>

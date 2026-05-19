@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import './Details.css';
+import { useEffect, useState } from "react";
+import "./Details.css";
 
 export const Details = ({
   sdk,
   details,
   onContinue,
 }: {
-  sdk: HTMLIdverseSdkUiElement;
+  sdk: HTMLIdvSdkWebElement;
   details: any[];
   onContinue: () => void;
 }) => {
@@ -38,15 +38,15 @@ export const Details = ({
   const fields = [];
 
   const order = [
-    'full_name',
-    'given_name',
-    'first_name',
-    'middle_name',
-    'last_name',
-    'document_number',
-    'birth_date',
-    'expiry_date',
-    'document_id',
+    "full_name",
+    "given_name",
+    "first_name",
+    "middle_name",
+    "last_name",
+    "document_number",
+    "birth_date",
+    "expiry_date",
+    "document_id",
   ];
 
   details.sort(function (a: any, b: any) {
@@ -62,14 +62,14 @@ export const Details = ({
   for (let i = 0; i < details.length; i++) {
     const field = details[i];
     fields.push({
-      label: field.fieldName.replace(/_/g, ' '),
+      label: field.fieldName.replace(/_/g, " "),
       name: field.fieldName,
       value: field.fieldValue,
     });
   }
 
   return (
-    <div className={`details ${continueButtonHasBeenClicked ? '' : 'on-top'}`}>
+    <div className={`details ${continueButtonHasBeenClicked ? "" : "on-top"}`}>
       <div className="details-header">
         <h4 className="details-header-title">Confirm your details</h4>
       </div>
@@ -101,7 +101,7 @@ export const Details = ({
           className="details-submit-button"
           onClick={handleContinue}
         >
-          {continueButtonHasBeenClicked ? 'Loading' : 'Continue with Face Scan'}
+          {continueButtonHasBeenClicked ? "Loading" : "Continue with Face Scan"}
         </button>
       </div>
     </div>

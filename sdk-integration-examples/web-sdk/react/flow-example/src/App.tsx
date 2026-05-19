@@ -1,15 +1,14 @@
 const sessionUrl = import.meta.env.VITE_SDK_SESSION_URL;
 const sessionToken = import.meta.env.VITE_SDK_SESSION_TOKEN;
-const buildId = import.meta.env.VITE_SDK_SESSION_BUILD_ID;
 
-import { useState, useEffect, useRef } from 'react';
-import './App.css';
-import { IdverseSdkUiCustomEvent, SdkType } from '@idverse/idverse-sdk-ui';
+import { useState, useEffect, useRef } from "react";
+import "./App.css";
+import { IdvSdkWebCustomEvent, SdkType } from "@idverse/idv-sdk-web";
 
-import { Details } from './components/Details/Details';
-import { Intro } from './components/Intro';
-import { IdScan } from './components/IdScan';
-import { End } from './components/End';
+import { Details } from "./components/Details/Details";
+import { Intro } from "./components/Intro";
+import { IdScan } from "./components/IdScan";
+import { End } from "./components/End";
 
 enum Step {
   Intro,
@@ -23,14 +22,12 @@ function App() {
   const [is_sdk_id_scan_loaded, set_is_sdk_id_scan_loaded] = useState(false);
   const [resultData, setResultData] = useState<any>();
 
-  const sdk_ref = useRef<HTMLIdverseSdkUiElement>();
+  const sdk_ref = useRef<HTMLIdvSdkWebElement>();
 
   useEffect(() => {
-    const sdk = document.querySelector(
-      'idverse-sdk-ui'
-    ) as HTMLIdverseSdkUiElement;
+    const sdk = document.querySelector("idv-sdk-web") as HTMLIdvSdkWebElement;
     if (!sdk) {
-      throw 'idverse-sdk-ui tag does not exist';
+      throw "idv-sdk-web tag does not exist";
     }
 
     sdk.recognizers = [SdkType.IDScan, SdkType.FaceScan];
@@ -38,10 +35,13 @@ function App() {
     sdk_ref.current = sdk;
 
     const onAuthenticated = () => {
-      console.log('authenticated');
+      console.log("authenticated");
       // Eager Loading:
       // As soon as we are authenticated, we call sdk.loadIDScan()
       // Assuming you will scan ID first
+      // We need to manually setting enableDFAA and enableFaceMatch when we are eager loading.
+      sdk.enableDFA = true;
+      sdk.enableFaceMatch = true;
       sdk.loadIDScan().then(() => set_is_sdk_id_scan_loaded(true));
 
       // We can also call sdk.loadFaceScan() here, i.e
@@ -50,8 +50,8 @@ function App() {
       // In this example we are calling loadFaceScan() once we reach `Details` screen
     };
 
-    const onScanSuccess = (e: IdverseSdkUiCustomEvent<any>) => {
-      console.log('Scan Success', e);
+    const onScanSuccess = (e: IdvSdkWebCustomEvent<any>) => {
+      console.log("Scan Success", e);
 
       if (e.detail.sdkType === SdkType.IDScan) {
         // When ID Scan, the extracted details are found here
@@ -62,7 +62,7 @@ function App() {
             Object.entries(res).map(([key, value]) => ({
               fieldName: key,
               fieldValue: value,
-            }))
+            })),
           );
         }
 
@@ -80,11 +80,11 @@ function App() {
       }
     };
 
-    sdk.addEventListener('authenticated', onAuthenticated);
-    sdk.addEventListener('scanSuccess', onScanSuccess);
+    sdk.addEventListener("authenticated", onAuthenticated);
+    sdk.addEventListener("scanSuccess", onScanSuccess);
 
     return () => {
-      sdk.removeEventListener('authenticated', onAuthenticated);
+      sdk.removeEventListener("authenticated", onAuthenticated);
     };
   }, []);
 
@@ -123,10 +123,9 @@ function App() {
       )}
 
       {/* Initialize endpoint is called as soon as <idverse-sdk-ui/> is in the DOM */}
-      <idverse-sdk-ui
+      <idv-sdk-web
         session-url={sessionUrl}
         session-token={sessionToken}
-        session-build-id={buildId}
         // Use `enable-dfa` prop to choose whether or not DFA engine is enabled, if value is static and will not change
         // If for some reason value is dynamic (needs to change) use `sdk.setEnableDFA()`
         enable-dfa={true}
@@ -134,7 +133,6 @@ function App() {
         // If for some reason value is dynamic (needs to change) use `sdk.setEnableFaceMatch()`
         enable-face-match={true}
         skip-face-scan-intro={true}
-      // worker-path="./sdk-idverse/assets/IDVerseSDK.worker.min.XXXXX.js"
       />
     </div>
   );
